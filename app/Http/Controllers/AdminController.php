@@ -167,10 +167,4 @@ class AdminController extends Controller
     }
 
 
-    public function addGmail()
-    {
-        return view('admin.addGmail');
-    }
-
-
 }

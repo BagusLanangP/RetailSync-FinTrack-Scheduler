@@ -110,20 +110,10 @@ class InventoryCheckingController extends Controller
         return redirect()->route('inventory_index')->with('success', 'Data berhasil dihapus!');
     }
 
-    // Tampilkan detail jika dibutuhkan
-    public function show($id)
-    {
-        $item = InventoryChecking::with(['jenisBarang', 'supplier'])->findOrFail($id);
-        return view('inventory_checkings.show', compact('item'));
-    }
-
     // Endpoint Sinkronisasi Stok dari Kasir POS
     public function apiSyncStocks(Request $request)
     {
-        $apiToken = $request->header('X-API-TOKEN');
-        $expectedToken = env('CASHIER_API_TOKEN', 'kasir_secret_token');
-
-        if ($apiToken !== $expectedToken) {
+        if (! $this->isValidCashierToken($request)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Token otorisasi API kasir tidak valid.'

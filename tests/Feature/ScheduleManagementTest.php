@@ -21,7 +21,7 @@ class ScheduleManagementTest extends TestCase
 
     public function test_guest_can_access_public_schedules()
     {
-        $response = $this->get(route('schedule.index'));
+        $response = $this->get(route('public.schedule.index'));
         $response->assertStatus(200);
     }
 
@@ -95,6 +95,13 @@ class ScheduleManagementTest extends TestCase
         $this->assertNull($schedule->completed_at);
     }
 
+    public function test_guest_cannot_fetch_holidays_or_send_notification_routes()
+    {
+        $this->get('/fetcholidays')->assertRedirect(route('login'));
+        $this->get('/fetch')->assertRedirect(route('login'));
+        $this->get('/kirim-email')->assertNotFound();
+    }
+
     public function test_fetch_holidays_endpoint_returns_json()
     {
         Http::fake([
@@ -109,7 +116,7 @@ class ScheduleManagementTest extends TestCase
             ], 200)
         ]);
 
-        $response = $this->get('/fetcholidays');
+        $response = $this->actingAs(User::factory()->create())->get('/fetcholidays');
 
         $response->assertJson([
             'success' => true,

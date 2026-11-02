@@ -10,19 +10,17 @@ use App\Models\InventoryChecking;
 
 class EmailController extends Controller
 {
-    public function kirimEmail($id)
-    {
-        return $this->kirimScheduleEmail($id);
-    }
-
     public function kirimScheduleEmail($id)
     {
         $schedule = Schedule::find($id);
         if (!$schedule) {
             return back()->with('error', 'Data tidak ditemukan.');
         }
-        $email = 'baguslanangpurbhawa@gmail.com';
-    
+        $email = config('mail.notify_to');
+        if (! $email) {
+            return back()->with('error', 'NOTIFY_EMAIL belum diatur di .env.');
+        }
+
         $data = [
             "name" => $schedule->name,
             "catatan" => $schedule->note,
@@ -41,8 +39,11 @@ class EmailController extends Controller
         if (!$inventory) {
             return back()->with('error', 'Data tidak ditemukan.');
         }
-        $email = 'baguslanangpurbhawa@gmail.com';
-    
+        $email = config('mail.notify_to');
+        if (! $email) {
+            return back()->with('error', 'NOTIFY_EMAIL belum diatur di .env.');
+        }
+
         $data = [
             "name" => $inventory->nama,
             "catatan" => "Jumlah: " . $inventory->jumlah . ", Harga Pokok: " . $inventory->harga_pokok . ", Harga Jual: " . $inventory->harga_jual . ($inventory->keterangan ? ". Catatan: " . $inventory->keterangan : ""),

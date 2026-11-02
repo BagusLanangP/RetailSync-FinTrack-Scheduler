@@ -922,10 +922,7 @@ class FinanceController extends Controller
     public function apiStoreTransaction(Request $request)
     {
         // Token API statis dari config / env
-        $apiToken = $request->header('X-API-TOKEN');
-        $expectedToken = env('CASHIER_API_TOKEN', 'kasir_secret_token');
-
-        if ($apiToken !== $expectedToken) {
+        if (! $this->isValidCashierToken($request)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Token otorisasi API kasir tidak valid.'

@@ -113,4 +113,15 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Recipient
+    |--------------------------------------------------------------------------
+    |
+    | Alamat tujuan email notifikasi jadwal dan inventory.
+    |
+    */
+
+    'notify_to' => env('NOTIFY_EMAIL'),
+
 ];

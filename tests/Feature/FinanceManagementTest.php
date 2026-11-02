@@ -224,9 +224,26 @@ class FinanceManagementTest extends TestCase
         ]);
     }
 
+    public function test_cashier_pos_api_rejects_all_requests_when_token_not_configured()
+    {
+        config(['services.cashier.token' => null]);
+
+        $response = $this->postJson('/api/finance/daily-transactions', [
+            'tanggal' => '2026-06-12',
+            'nama' => 'Shift Malam POS',
+            'tipe' => 'pemasukan',
+            'kategori' => 'Retail',
+            'nominal' => 1200000
+        ], [
+            'X-API-TOKEN' => ''
+        ]);
+
+        $response->assertStatus(401);
+    }
+
     public function test_cashier_pos_api_stores_transaction_with_valid_token()
     {
-        // Expect token defaults to 'kasir_secret_token'
+        // Token diambil dari CASHIER_API_TOKEN (diset di phpunit.xml)
         $response = $this->postJson('/api/finance/daily-transactions', [
             'tanggal' => '2026-06-12',
             'nama' => 'Shift Malam POS',

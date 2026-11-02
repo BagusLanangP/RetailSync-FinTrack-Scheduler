@@ -47,9 +47,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/create-user', [UserController::class, 'create'])->name('admin.create-user');
         Route::post('/store-user', [UserController::class, 'store'])->name('admin.store-user');
     });
-    Route::get('/add-gmail', [AdminController::class, 'addGmail'])->name('admin.add-gmail');
-   
-    
+
+
     // Inventory
     Route::get('/inventory', [InventoryCheckingController::class, 'index'])->name('inventory_index');
     Route::get('/inventory-checkings/create', [InventoryCheckingController::class, 'create'])->name('inventory_checkings.create');
@@ -120,14 +119,15 @@ Route::get('/', function () {
     $totalInventory = \App\Models\InventoryChecking::count();
     return view('index', compact('totalSuppliers', 'totalInventory'));
 });
-Route::get('/fetcholidays', [ApiLiburController::class, 'fetchHolidays']);
-Route::get('/fetch', [ApiLiburController::class, 'index']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/fetcholidays', [ApiLiburController::class, 'fetchHolidays']);
+    Route::get('/fetch', [ApiLiburController::class, 'index']);
+});
 
-Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
+Route::get('/schedule', [ScheduleController::class, 'index'])->name('public.schedule.index');
 
-Route::get('/schedule-create', [ScheduleController::class, 'create'])->name('schedule.create');
+Route::get('/schedule-create', [ScheduleController::class, 'create'])->name('public.schedule.create');
 
-Route::get('/kirim-email', [EmailController::class, 'kirimEmail']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

@@ -77,7 +77,7 @@
     <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm mb-6 space-y-4">
         
         <!-- Filter Form -->
-        <form method="GET" action="{{ route('schedule.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
+        <form method="GET" action="{{ route('public.schedule.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
             <div class="w-full sm:w-64 space-y-1.5">
                 <label for="jenis" class="block text-xs font-semibold text-slate-500 uppercase">Filter Jenis Schedule</label>
                 <select name="jenis" id="jenis" class="w-full border border-slate-200/80 bg-slate-50/50 rounded-xl px-3 py-2 text-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500/10 outline-none transition duration-150">
@@ -93,7 +93,7 @@
                 Filter
             </button>
             @if(request('jenis'))
-                <a href="{{ route('schedule.index') }}" class="w-full sm:w-auto px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl text-center transition duration-150">
+                <a href="{{ route('public.schedule.index') }}" class="w-full sm:w-auto px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl text-center transition duration-150">
                     Reset
                 </a>
             @endif
