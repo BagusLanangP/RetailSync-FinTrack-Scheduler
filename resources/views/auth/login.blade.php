@@ -32,7 +32,7 @@
         <!-- Header -->
         <div class="mb-6 flex flex-col items-center justify-center text-center">
             <div class="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shadow-inner mb-4 transition-all duration-300 hover:scale-105">
-                <img src="/img/logo.png" alt="Logo" class="h-10 w-auto">
+                <img src="/img/logo-header.svg" alt="Logo" class="h-10 w-auto">
             </div>
             <h2 class="text-2xl font-bold text-white tracking-tight">
                 Welcome Back

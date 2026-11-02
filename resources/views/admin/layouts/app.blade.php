@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - MSL Admin</title>
-    <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
-    <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('img/logo-header.svg') }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ asset('img/logo-header.svg') }}" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>

@@ -4,7 +4,7 @@
     <div class="p-6 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="bg-emerald-500/10 p-2 rounded-xl border border-emerald-500/20">
-                <img src="/img/logo.png" alt="Logo" class="h-6 w-auto">
+                <img src="/img/logo-header.svg" alt="Logo" class="h-6 w-auto">
             </div>
             <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">MSL Admin</span>
         </div>

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name') }} - @yield('title', 'Welcome')</title>
-    <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
-    <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('img/logo-header.svg') }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ asset('img/logo-header.svg') }}" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -20,7 +20,7 @@
     <nav class="bg-emerald-600/95 backdrop-blur-md border-b border-emerald-500/20 p-4 px-6 sm:px-10 flex justify-between items-center shadow-md text-white fixed top-0 left-0 w-full z-50">
         <div class="flex items-center gap-3">
             <div class="bg-white p-1 rounded-lg">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-6 w-auto">
+                <img src="{{ asset('img/logo-header.svg') }}" alt="Logo" class="h-6 w-auto">
             </div>
             <span class="font-bold text-base tracking-tight text-white">{{ config('app.name') }}</span>
         </div>

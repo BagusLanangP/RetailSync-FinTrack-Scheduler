@@ -1,141 +1,140 @@
-@extends('layouts.index')
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name') }} - Homepage</title>
+    <meta name="description" content="Jadwal, inventaris, dan keuangan toko dalam satu sistem yang tenang dan rapi.">
+    <link rel="icon" href="{{ asset('img/logo-header.svg') }}" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+        .display { letter-spacing: -0.035em; line-height: 1.04; }
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0ms); }
+        .reveal.in { opacity: 1; transform: none; }
+        .tile img { transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
+        .tile:hover img { transform: scale(1.04); }
+        .btn { transition: transform .2s ease, background-color .2s ease; }
+        .btn:active { transform: scale(.97); }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .tile img { transition: none; }
+        }
+    </style>
+</head>
+<body class="bg-[#fbfbfd] text-[#1d1d1f]">
 
-@section('title', 'Homepage')
+    <!-- Nav -->
+    <nav class="fixed top-0 inset-x-0 z-50 bg-[#fbfbfd]/80 backdrop-blur-xl">
+        <div class="max-w-[1080px] mx-auto h-12 px-5 flex items-center justify-between text-[13px]">
+            <a href="/" class="flex items-center gap-2 font-semibold">
+                <img src="{{ asset('img/logo-header.svg') }}" alt="" class="h-5 w-auto">
+                <span>{{ config('app.name') }}</span>
+            </a>
+            <div class="hidden sm:flex items-center gap-8 text-[#424245]">
+                <a href="#fitur" class="hover:text-black transition">Fitur</a>
+                <a href="/schedule" class="hover:text-black transition">Jadwal</a>
+                <a href="/admin/dashboard" class="hover:text-black transition">Dashboard</a>
+            </div>
+            <a href="/admin/dashboard" class="btn bg-[#1d1d1f] text-white rounded-full px-3.5 py-1 font-medium hover:bg-black">Masuk</a>
+        </div>
+    </nav>
 
-@section('content')
-<div class="relative min-h-screen py-24 px-4 flex flex-col justify-center items-center">
-    
-    <!-- Background blurred store image with high visibility (opacity) and blur to prevent white edge artifacts -->
-    <div class="fixed inset-0 bg-cover bg-center -z-20" style="background-image: url('{{ asset('img/toko.png') }}'); filter: blur(12px); transform: scale(1.1); opacity: 0.95;"></div>
-    
-    <!-- Soft bright light-emerald backdrop gradient layer with lower opacity to let the store image show through clearly -->
-    <div class="fixed inset-0 bg-gradient-to-tr from-white/45 via-white/30 to-emerald-50/20 -z-10"></div>
+    <main>
+        <!-- Hero -->
+        <section class="pt-32 sm:pt-40 text-center px-5">
+            <h1 class="reveal display text-[44px] sm:text-7xl lg:text-[88px] font-semibold max-w-4xl mx-auto">
+                Satu sistem.<br>Seluruh toko.
+            </h1>
+            <p class="reveal mt-6 text-xl sm:text-2xl text-[#6e6e73] max-w-2xl mx-auto leading-snug" style="--d:100ms">
+                Jadwal, inventaris, dan keuangan dalam satu sistem yang tenang dan mudah dipakai.
+            </p>
+            <div class="reveal mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center" style="--d:200ms">
+                <a href="/schedule" class="btn bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-7 py-3 text-[17px] font-medium">Lihat jadwal</a>
+                <a href="/admin/dashboard" class="text-emerald-700 hover:underline text-[17px] font-medium py-3">Masuk dashboard &rsaquo;</a>
+            </div>
 
-    <!-- Hero Section -->
-    <section class="max-w-4xl w-full mx-auto relative z-10 space-y-10">
-
-        <!-- Intro Card (Light Glassmorphic Theme) -->
-        <div class="bg-white/80 backdrop-blur-2xl border border-white/60 p-8 sm:p-12 rounded-3xl shadow-xl">
-            <div class="flex flex-col items-center justify-center text-center">
-                <div class="w-20 h-20 bg-emerald-50 border border-emerald-100 rounded-3xl flex items-center justify-center shadow-md mb-6">
-                    <img src="/img/logo.png" alt="Logo" class="h-12 w-auto">
+            <div class="reveal mt-16 max-w-[1080px] mx-auto" style="--d:150ms">
+                <div class="tile relative overflow-hidden rounded-[28px] sm:rounded-[40px] aspect-[4/3] sm:aspect-[16/9] bg-black">
+                    <img src="{{ asset('img/toko.png') }}" alt="Tampilan toko MSL" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/55"></div>
                 </div>
-                
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-none">
-                    MSL FinTrack <span class="text-emerald-600">&</span> Scheduler
-                </h1>
-                <p class="text-sm sm:text-base text-slate-500 mt-3 max-w-xl mx-auto font-medium">
-                    Sistem penjadwalan terintegrasi, pelacakan inventaris, dan analisis varians anggaran bulanan berbasis metode 50/30/20 secara dinamis.
-                </p>
+            </div>
+        </section>
 
-                <!-- Divider -->
-                <div class="w-full border-t border-slate-200/60 my-8"></div>
+        <!-- Fitur -->
+        <section id="fitur" class="max-w-[1080px] mx-auto px-5 pt-32 sm:pt-44">
+            <h2 class="reveal display text-4xl sm:text-6xl font-semibold text-center max-w-3xl mx-auto">
+                Semua yang toko butuhkan. Tidak lebih.
+            </h2>
 
-                <!-- Main Features Grid -->
-                <div class="text-left w-full max-w-2xl mx-auto space-y-4">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-3 text-center sm:text-left">Fitur Utama Sistem</h3>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex items-center gap-3 bg-white/40 border border-white/50 p-4 rounded-2xl shadow-sm">
-                            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                            </span>
-                            <span class="text-sm text-slate-700 font-semibold">Manajemen Inventaris</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/40 border border-white/50 p-4 rounded-2xl shadow-sm">
-                            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </span>
-                            <span class="text-sm text-slate-700 font-semibold">Penjadwalan & Hari Libur</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/40 border border-white/50 p-4 rounded-2xl shadow-sm">
-                            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </span>
-                            <span class="text-sm text-slate-700 font-semibold">Laporan Analitik Tren Keuangan</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/40 border border-white/50 p-4 rounded-2xl shadow-sm">
-                            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                            </span>
-                            <span class="text-sm text-slate-700 font-semibold">Notifikasi Expired Email</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/40 border border-white/50 p-4 rounded-2xl shadow-sm group hover:border-emerald-200 transition-all">
-                            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                            </span>
-                            <div>
-                                <span class="text-sm text-slate-700 font-semibold block">Varians Anggaran & Realisasi</span>
-                                <span class="text-[9px] text-emerald-600 font-bold uppercase tracking-wide">Teroptimasi</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/40 border border-white/50 p-4 rounded-2xl shadow-sm group hover:border-emerald-200 transition-all">
-                            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </span>
-                            <div>
-                                <span class="text-sm text-slate-700 font-semibold block">Unduh Laporan Performa PDF</span>
-                                <span class="text-[9px] text-emerald-600 font-bold uppercase tracking-wide">Baru</span>
-                            </div>
-                        </div>
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Jadwal -->
+                <article class="reveal tile relative overflow-hidden rounded-[28px] bg-white min-h-[520px] flex flex-col">
+                    <div class="p-8 sm:p-10 text-center">
+                        <h3 class="display text-3xl sm:text-4xl font-semibold">Jadwal &amp; hari libur</h3>
+                        <p class="mt-3 text-[17px] text-[#6e6e73] leading-snug">Atur shift karyawan dan lihat hari libur nasional langsung di kalender.</p>
                     </div>
-                </div>
+                    <div class="flex-1 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1200&q=75" alt="Perencana bulanan dan secangkir kopi" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                </article>
 
-                <!-- CTA Buttons -->
-                <div class="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4 w-full sm:w-auto">
-                    <a href="/schedule" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold rounded-2xl shadow-lg shadow-emerald-500/20 transition duration-150 transform hover:-translate-y-0.5 text-center">
-                        Lihat Jadwal
-                    </a>
-                    <a href="/admin/dashboard" class="w-full sm:w-auto px-8 py-3.5 bg-white/80 hover:bg-white text-emerald-700 border border-emerald-200 hover:border-emerald-300 font-semibold rounded-2xl shadow-md transition duration-150 transform hover:-translate-y-0.5 text-center">
-                        Masuk Dashboard
-                    </a>
-                </div>
+                <!-- Inventaris -->
+                <article class="reveal tile relative overflow-hidden rounded-[28px] bg-[#1d1d1f] text-white min-h-[520px] flex flex-col" style="--d:100ms">
+                    <div class="p-8 sm:p-10 text-center">
+                        <h3 class="display text-3xl sm:text-4xl font-semibold">Inventaris</h3>
+                        <p class="mt-3 text-[17px] text-neutral-400 leading-snug">Pantau stok dan supplier. Notifikasi email sebelum barang kedaluwarsa.</p>
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=75" alt="Gudang dengan rak barang tertata" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                </article>
+
+                <!-- Keuangan (wide) -->
+                <article class="reveal tile md:col-span-2 overflow-hidden rounded-[28px] bg-[#f5f5f7] grid md:grid-cols-2 items-stretch">
+                    <div class="p-8 sm:p-14 flex flex-col justify-center">
+                        <h3 class="display text-3xl sm:text-5xl font-semibold">Keuangan yang jelas.</h3>
+                        <p class="mt-4 text-[19px] text-[#6e6e73] leading-snug max-w-md">
+                            Anggaran 50/30/20, perbandingan target dan realisasi, serta tren bulanan. Unduh laporan performa dalam bentuk PDF kapan saja.
+                        </p>
+                        <a href="/admin/dashboard" class="mt-6 text-emerald-700 hover:underline text-[17px] font-medium">Buka dashboard &rsaquo;</a>
+                    </div>
+                    <div class="min-h-[300px] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=75" alt="Laptop menampilkan grafik analitik keuangan" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                </article>
             </div>
-        </div>
-        
-        <!-- Live System Statistics Card (Light Glassmorphic Theme) -->
-        <div class="bg-white/80 backdrop-blur-2xl border border-white/60 p-8 sm:p-12 rounded-3xl shadow-xl text-center">
-            <h2 class="text-xl font-bold text-slate-900 mb-6">Statistik Sistem Terkini</h2>  
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                
-                <!-- Supplier Stats Widget -->
-                <div class="bg-white/50 border border-white/60 p-6 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md transition duration-150">
-                    <span class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl mb-3">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </span>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Supplier</h3>
-                    <p class="text-3xl font-extrabold text-indigo-600 mt-2">{{ $totalSuppliers }}</p>
-                </div>
+        </section>
 
-                <!-- Inventory Stats Widget -->
-                <div class="bg-white/50 border border-white/60 p-6 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md transition duration-150">
-                    <span class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl mb-3">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 11m8 4V5M4 11v10l8 4" />
-                        </svg>
-                    </span>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Inventory</h3>
-                    <p class="text-3xl font-extrabold text-emerald-600 mt-2">{{ $totalInventory }}</p>
-                </div>
-
+        <!-- CTA -->
+        <section class="text-center px-5 py-32 sm:py-44">
+            <h2 class="reveal display text-4xl sm:text-6xl font-semibold max-w-3xl mx-auto">Mulai dari jadwal hari ini.</h2>
+            <div class="reveal mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center" style="--d:100ms">
+                <a href="/schedule" class="btn bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-7 py-3 text-[17px] font-medium">Lihat jadwal</a>
+                <a href="/admin/dashboard" class="text-emerald-700 hover:underline text-[17px] font-medium py-3">Masuk dashboard &rsaquo;</a>
             </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#f5f5f7] text-xs text-[#6e6e73]">
+        <div class="max-w-[1080px] mx-auto px-5 py-6 flex flex-col sm:flex-row justify-between gap-2">
+            <span>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</span>
+            <span>Foto: Unsplash</span>
         </div>
-        
-    </section>
-</div>
-@endsection
+    </footer>
+
+    <script>
+        const els = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+            }, { threshold: 0.12 });
+            els.forEach(el => io.observe(el));
+        } else {
+            els.forEach(el => el.classList.add('in'));
+        }
+    </script>
+</body>
+</html>
