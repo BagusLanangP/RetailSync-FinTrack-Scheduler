@@ -166,7 +166,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" 
-                                           onchange="toggleStatus({{ $schedule->id }})"
+                                           onchange="confirmToggleStatus(this, {{ $schedule->id }})"
                                            class="w-5 h-5 text-emerald-600 border-slate-300 rounded-xl focus:ring-emerald-500/20 cursor-pointer"
                                            {{ $schedule->status ? 'checked' : '' }}>
                                     <span class="font-bold text-slate-900 {{ $schedule->status ? 'line-through text-slate-400' : '' }}">{{ $schedule->name }}</span>
@@ -334,6 +334,25 @@
                 <button onclick="closeDetailModal()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">
                     Tutup
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Status Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm justify-center items-center p-4">
+        <div id="confirm-card" class="bg-white border border-slate-100 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl transform scale-95 transition-transform duration-200">
+            <div class="p-6 text-center space-y-3">
+                <div id="confirm-icon" class="mx-auto w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h3 id="confirm-title" class="text-base font-bold text-slate-900">Konfirmasi</h3>
+                <p id="confirm-message" class="text-sm text-slate-500"></p>
+            </div>
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-2 justify-end">
+                <button type="button" id="confirm-cancel" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">Batal</button>
+                <button type="button" id="confirm-ok" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition">Ya, Selesai</button>
             </div>
         </div>
     </div>
@@ -566,6 +585,40 @@
                 }
             });
         });
+
+        function confirmToggleStatus(checkbox, id) {
+            const done = checkbox.checked;
+            const modal = $('#confirm-modal');
+            const card = $('#confirm-card');
+
+            $('#confirm-title').text(done ? 'Tandai Selesai?' : 'Batalkan Status Selesai?');
+            $('#confirm-message').text(done
+                ? 'Apakah schedule ini sudah selesai?'
+                : 'Schedule ini akan dikembalikan ke status belum selesai.');
+            $('#confirm-ok').text(done ? 'Ya, Selesai' : 'Ya, Batalkan');
+
+            const close = () => {
+                card.removeClass('scale-100').addClass('scale-95');
+                setTimeout(() => modal.removeClass('flex').addClass('hidden'), 150);
+                $('#confirm-ok, #confirm-cancel').off('click');
+                modal.off('click');
+            };
+
+            $('#confirm-ok').off('click').on('click', function() {
+                close();
+                toggleStatus(id);
+            });
+            $('#confirm-cancel').off('click').on('click', function() {
+                checkbox.checked = !done;
+                close();
+            });
+            modal.off('click').on('click', function(e) {
+                if (e.target === this) { checkbox.checked = !done; close(); }
+            });
+
+            modal.removeClass('hidden').addClass('flex');
+            setTimeout(() => card.removeClass('scale-95').addClass('scale-100'), 10);
+        }
 
         function toggleStatus(id) {
             $.ajax({

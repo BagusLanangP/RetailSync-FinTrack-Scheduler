@@ -34,6 +34,25 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
+                    @unless (request()->routeIs('admin.dashboard'))
+                        <!-- Back button: kembali ke halaman sebelumnya, fallback ke dashboard -->
+                        <a href="{{ route('admin.dashboard') }}" id="back-button"
+                           class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition duration-150 active:scale-[0.98]"
+                           title="Kembali">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span class="hidden sm:inline">Kembali</span>
+                        </a>
+                        <script>
+                            document.getElementById('back-button').addEventListener('click', function (e) {
+                                if (document.referrer && new URL(document.referrer).origin === location.origin) {
+                                    e.preventDefault();
+                                    history.back();
+                                }
+                            });
+                        </script>
+                    @endunless
                     <h1 class="text-xl font-bold tracking-tight text-slate-900">@yield('title')</h1>
                 </div>
 
