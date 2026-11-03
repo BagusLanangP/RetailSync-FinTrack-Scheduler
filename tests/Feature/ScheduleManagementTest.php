@@ -234,5 +234,67 @@ class ScheduleManagementTest extends TestCase
         // Reminder date should be updated if it becomes less than the execution date
         $this->assertEquals('2026-06-15', $schedule->reminder_date);
     }
+
+    public function test_schedule_budget_defaults_to_zero_estimate_when_not_given()
+    {
+        $user = User::factory()->create();
+        $jenis = $this->makeJenis('Belanja');
+
+        $this->actingAs($user)->post(route('schedule.store'), [
+            'name' => 'Belanja Barang A',
+            'jenis_schedule_id' => $jenis->id,
+            'date' => '2026-11-10',
+            'berulang' => '0',
+            'reminder_date' => '2026-11-10',
+        ])->assertRedirect();
+
+        $s = Schedule::where('name', 'Belanja Barang A')->first();
+        $this->assertEquals(0, $s->budget);
+        $this->assertNull($s->budget_final);
+        $this->assertTrue($s->is_estimate);
+        $this->assertEquals(0, $s->effective_budget);
+    }
+
+    public function test_final_budget_overrides_estimate_and_keeps_estimate()
+    {
+        $user = User::factory()->create();
+        $jenis = $this->makeJenis('Belanja');
+        $s = Schedule::create([
+            'name' => 'Belanja B', 'jenis_schedule_id' => $jenis->id, 'date' => '2026-11-10',
+            'reminder_date' => '2026-11-10', 'berulang' => false, 'budget' => 100000,
+        ]);
+        $this->assertTrue($s->is_estimate);
+        $this->assertEquals(100000, $s->effective_budget);
+
+        $this->actingAs($user)->put(route('schedule.update', $s->id), [
+            'name' => 'Belanja B', 'jenis_schedule_id' => $jenis->id, 'date' => '2026-11-10',
+            'reminder_date' => '2026-11-10', 'berulang' => '0', 'budget' => 100000, 'budget_final' => 120000,
+        ])->assertRedirect();
+
+        $s->refresh();
+        $this->assertFalse($s->is_estimate);
+        $this->assertEquals(120000, $s->effective_budget);
+        $this->assertEquals(100000, $s->budget);
+        $this->actingAs($user)->get(route('admin.schedule.index'))->assertOk()->assertSee('Rp120.000')->assertDontSee('inline-block mt-1 px-2 py-0.5', false);
+    }
+
+    public function test_estimate_badge_is_shown_in_schedule_list()
+    {
+        $user = User::factory()->create();
+        $jenis = $this->makeJenis('Belanja');
+        Schedule::create([
+            'name' => 'Belanja C', 'jenis_schedule_id' => $jenis->id, 'date' => '2026-11-10',
+            'reminder_date' => '2026-11-10', 'berulang' => false, 'budget' => 0,
+        ]);
+        $this->actingAs($user)->get(route('admin.schedule.index'))->assertOk()->assertSee('inline-block mt-1 px-2 py-0.5', false);
+    }
+
+    private function makeJenis(string $nama): JenisSchedule
+    {
+        $j = new JenisSchedule();
+        $j->nama = $nama;
+        $j->save();
+        return $j;
+    }
 }
 

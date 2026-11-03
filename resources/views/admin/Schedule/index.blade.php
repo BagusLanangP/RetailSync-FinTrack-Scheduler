@@ -153,7 +153,7 @@
                         <th class="px-6 py-4 w-[15%]">Tanggal</th>
                         <th class="px-6 py-4 w-[10%]">Dibuat Oleh</th>
                         <th class="px-6 py-4 w-[10%] text-center">Status</th>
-                        <th class="px-6 py-4 w-[8%]">Budget</th>
+                        <th class="px-6 py-4 w-[8%]">Biaya</th>
                         <th class="px-6 py-4 w-[22%] text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -167,6 +167,8 @@
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" 
                                            onchange="confirmToggleStatus(this, {{ $schedule->id }})"
+                                           data-estimate="{{ $schedule->is_estimate ? '1' : '0' }}"
+                                           data-edit-url="{{ route('schedule.edit', $schedule->id) }}"
                                            class="w-5 h-5 text-emerald-600 border-slate-300 rounded-xl focus:ring-emerald-500/20 cursor-pointer"
                                            {{ $schedule->status ? 'checked' : '' }}>
                                     <span class="font-bold text-slate-900 {{ $schedule->status ? 'line-through text-slate-400' : '' }}">{{ $schedule->name }}</span>
@@ -201,7 +203,12 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 font-semibold text-slate-900">
-                                {{ $schedule->budget ? 'Rp' . number_format($schedule->budget, 0, ',', '.') : '-' }}
+                                @if($schedule->is_estimate)
+                                    <div>Rp{{ number_format($schedule->budget, 0, ',', '.') }}</div>
+                                    <span class="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-md">Masih estimasi</span>
+                                @else
+                                    Rp{{ number_format($schedule->budget_final, 0, ',', '.') }}
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right flex flex-wrap justify-end gap-1.5 items-center">
                                 
@@ -211,7 +218,9 @@
                                         data-category="{{ $schedule->jenisSchedule->nama }}"
                                         data-date="{{ \Carbon\Carbon::parse($schedule->date)->format('d M Y') }}"
                                         data-reminder="{{ \Carbon\Carbon::parse($schedule->reminder_date)->format('d M Y') }}"
-                                        data-budget="{{ $schedule->budget ? 'Rp' . number_format($schedule->budget, 0, ',', '.') : '-' }}"
+                                        data-budget="{{ $schedule->is_estimate ? 'Rp' . number_format($schedule->budget, 0, ',', '.') . ' (estimasi)' : 'Rp' . number_format($schedule->budget_final, 0, ',', '.') }}"
+                                        data-is-estimate="{{ $schedule->is_estimate ? '1' : '0' }}"
+                                        data-budget-estimate="{{ 'Rp' . number_format($schedule->budget, 0, ',', '.') }}"
                                         data-creator="{{ $schedule->creator->name ?? 'Sistem' }}"
                                         data-status="{{ $schedule->status ? 'Selesai' : 'Belum Selesai' }}"
                                         data-completed="{{ $schedule->completed_at ? \Carbon\Carbon::parse($schedule->completed_at)->format('d M Y H:i') : '-' }}"
@@ -309,8 +318,12 @@
                     <span class="col-span-2 text-slate-800" id="detail-reminder">-</span>
                 </div>
                 <div class="grid grid-cols-3 gap-2 border-b border-slate-100 pb-3">
-                    <span class="text-slate-400 font-semibold uppercase text-xs">Budget</span>
-                    <span class="col-span-2 font-bold text-slate-950" id="detail-budget">-</span>
+                    <span class="text-slate-400 font-semibold uppercase text-xs">Biaya</span>
+                    <div class="col-span-2">
+                        <span class="font-bold text-slate-950" id="detail-budget">-</span>
+                        <span id="detail-budget-badge" class="hidden ml-1 px-2 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-md">Masih estimasi</span>
+                        <div id="detail-budget-estimate" class="hidden text-xs text-slate-400 mt-1"></div>
+                    </div>
                 </div>
                 <div class="grid grid-cols-3 gap-2 border-b border-slate-100 pb-3">
                     <span class="text-slate-400 font-semibold uppercase text-xs">Dibuat Oleh</span>
@@ -352,6 +365,7 @@
             </div>
             <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-2 justify-end">
                 <button type="button" id="confirm-cancel" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">Batal</button>
+                <button type="button" id="confirm-fill-final" class="hidden px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-xl transition">Isi Biaya Final</button>
                 <button type="button" id="confirm-ok" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition">Ya, Selesai</button>
             </div>
         </div>
@@ -442,6 +456,8 @@
                     date: props.date,
                     reminder: props.reminder,
                     budget: props.budget,
+                    isEstimate: props.isEstimate,
+                    budgetEstimate: props.budgetEstimate,
                     creator: props.creator,
                     status: props.status,
                     completed: props.completed,
@@ -456,6 +472,8 @@
                     date: btn.data('date'),
                     reminder: btn.data('reminder'),
                     budget: btn.data('budget'),
+                    isEstimate: btn.attr('data-is-estimate') === '1',
+                    budgetEstimate: btn.attr('data-budget-estimate'),
                     creator: btn.data('creator'),
                     status: btn.data('status'),
                     completed: btn.data('completed'),
@@ -467,7 +485,12 @@
             $('#detail-category').text(data.category || '-');
             $('#detail-date').text(data.date || '-');
             $('#detail-reminder').text(data.reminder || '-');
-            $('#detail-budget').text(data.budget || '-');
+            // Tampilkan angka tanpa akhiran "(estimasi)"; statusnya ditunjukkan badge.
+            $('#detail-budget').text((data.budget || '-').replace(' (estimasi)', ''));
+            $('#detail-budget-badge').toggleClass('hidden', !data.isEstimate);
+            $('#detail-budget-estimate')
+                .text(data.budgetEstimate && !data.isEstimate && data.budgetEstimate !== (data.budget || '') ? 'Estimasi awal: ' + data.budgetEstimate : '')
+                .toggleClass('hidden', !(data.budgetEstimate && !data.isEstimate && data.budgetEstimate !== data.budget));
             $('#detail-creator').text(data.creator || '-');
             
             const statusSpan = $('#detail-status');
@@ -591,11 +614,21 @@
             const modal = $('#confirm-modal');
             const card = $('#confirm-card');
 
+            const isEstimate = done && $(checkbox).data('estimate') == 1;
+            const editUrl = $(checkbox).data('edit-url');
+
             $('#confirm-title').text(done ? 'Tandai Selesai?' : 'Batalkan Status Selesai?');
             $('#confirm-message').text(done
-                ? 'Apakah schedule ini sudah selesai?'
+                ? (isEstimate
+                    ? 'Biaya schedule ini masih estimasi. Isi biaya final sekarang agar laporan keuangan akurat?'
+                    : 'Apakah schedule ini sudah selesai?')
                 : 'Schedule ini akan dikembalikan ke status belum selesai.');
             $('#confirm-ok').text(done ? 'Ya, Selesai' : 'Ya, Batalkan');
+            $('#confirm-fill-final').toggleClass('hidden', !isEstimate).off('click').on('click', function() {
+                checkbox.checked = false;
+                window.location.href = editUrl;
+            });
+            $('#confirm-ok').text(isEstimate ? 'Tetap Selesai' : (done ? 'Ya, Selesai' : 'Ya, Batalkan'));
 
             const close = () => {
                 card.removeClass('scale-100').addClass('scale-95');

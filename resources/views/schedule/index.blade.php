@@ -192,7 +192,7 @@
                                 <div class="text-slate-400 mt-1">Remind: {{ \Carbon\Carbon::parse($schedule->reminder_date)->format('d M Y') }}</div>
                             </td>
                             <td class="px-6 py-4 font-semibold text-slate-900">
-                                {{ $schedule->budget ? 'Rp' . number_format($schedule->budget, 0, ',', '.') : '-' }}
+                                {{ $schedule->is_estimate ? 'Rp' . number_format($schedule->budget, 0, ',', '.') . ' (estimasi)' : 'Rp' . number_format($schedule->budget_final, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 text-slate-500 max-w-xs truncate italic">
                                 {{ $schedule->note ?? '-' }}

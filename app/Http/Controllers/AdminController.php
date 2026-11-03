@@ -52,7 +52,7 @@ class AdminController extends Controller
         // 2. Current Month's Expense
         $totalExpenses = floatval(Schedule::whereNotNull('budget')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->sum('budget'));
+            ->sum(\DB::raw('COALESCE(budget_final, budget)')));
         $totalExpenses += floatval(\App\Models\DailyTransaction::where('tipe', 'pengeluaran')
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->sum('nominal'));
@@ -64,7 +64,7 @@ class AdminController extends Controller
         }
         $allTimeProfit += floatval(\App\Models\DailyTransaction::where('tipe', 'pemasukan')->sum('nominal'));
 
-        $allTimeExpense = floatval(Schedule::whereNotNull('budget')->sum('budget'));
+        $allTimeExpense = floatval(Schedule::whereNotNull('budget')->sum(\DB::raw('COALESCE(budget_final, budget)')));
         $allTimeExpense += floatval(\App\Models\DailyTransaction::where('tipe', 'pengeluaran')->sum('nominal'));
 
         $totalCashPool = max(1000000000 + $allTimeProfit - $allTimeExpense, 0);
@@ -98,7 +98,7 @@ class AdminController extends Controller
             // Pengeluaran schedule
             $expenseM = floatval(Schedule::whereNotNull('budget')
                 ->whereBetween('date', [$startM, $endM])
-                ->sum('budget'));
+                ->sum(\DB::raw('COALESCE(budget_final, budget)')));
 
             // Pengeluaran daily transactions
             $expenseM += floatval(\App\Models\DailyTransaction::where('tipe', 'pengeluaran')
@@ -123,7 +123,7 @@ class AdminController extends Controller
             if (!isset($categoryBudgets[$categoryName])) {
                 $categoryBudgets[$categoryName] = 0;
             }
-            $categoryBudgets[$categoryName] += floatval($s->budget);
+            $categoryBudgets[$categoryName] += $s->effective_budget;
         }
         $txInMonth = \App\Models\DailyTransaction::where('tipe', 'pengeluaran')
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])

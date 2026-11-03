@@ -83,7 +83,7 @@ class FinanceController extends Controller
                 'nama' => $s->name,
                 'tipe' => 'Pengeluaran',
                 'kategori' => $s->jenisSchedule->nama ?? 'Umum',
-                'nominal' => floatval($s->budget),
+                'nominal' => $s->effective_budget,
                 'sumber' => 'Schedule',
                 'keterangan' => $s->note ?? 'Pengeluaran operasional / agenda'
             ];
@@ -122,7 +122,7 @@ class FinanceController extends Controller
 
         $totalExpenses = floatval(Schedule::whereNotNull('budget')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->sum('budget'));
+            ->sum(\DB::raw('COALESCE(budget_final, budget)')));
         $totalExpenses += floatval(DailyTransaction::where('tipe', 'pengeluaran')
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->sum('nominal'));
@@ -136,7 +136,7 @@ class FinanceController extends Controller
         }
         $allTimeProfit += floatval(DailyTransaction::where('tipe', 'pemasukan')->sum('nominal'));
 
-        $allTimeExpense = floatval(Schedule::whereNotNull('budget')->sum('budget'));
+        $allTimeExpense = floatval(Schedule::whereNotNull('budget')->sum(\DB::raw('COALESCE(budget_final, budget)')));
         $allTimeExpense += floatval(DailyTransaction::where('tipe', 'pengeluaran')->sum('nominal'));
 
         $totalCashPool = max(1000000000 + $allTimeProfit - $allTimeExpense, 0);
@@ -146,7 +146,7 @@ class FinanceController extends Controller
         $wantsExpense = 0;
 
         foreach ($schedulesInMonth as $s) {
-            $budget = floatval($s->budget);
+            $budget = $s->effective_budget;
             $catName = $s->jenisSchedule->nama ?? 'Umum';
             if (in_array($catName, ['Operasional', 'Maintenance'])) {
                 $needsExpense += $budget;
@@ -245,7 +245,7 @@ class FinanceController extends Controller
             // Pengeluaran schedule
             $expenseM = floatval(Schedule::whereNotNull('budget')
                 ->whereBetween('date', [$startM, $endM])
-                ->sum('budget'));
+                ->sum(\DB::raw('COALESCE(budget_final, budget)')));
 
             // Pengeluaran daily transactions
             $expenseM += floatval(DailyTransaction::where('tipe', 'pengeluaran')
@@ -270,7 +270,7 @@ class FinanceController extends Controller
             if (!isset($categoryBudgets[$catName])) {
                 $categoryBudgets[$catName] = 0;
             }
-            $categoryBudgets[$catName] += floatval($s->budget);
+            $categoryBudgets[$catName] += $s->effective_budget;
         }
         foreach ($txInMonth as $tx) {
             if ($tx->tipe === 'pengeluaran') {
@@ -335,7 +335,7 @@ class FinanceController extends Controller
 
         // Schedule expenses all-time
         foreach (Schedule::whereNotNull('budget')->whereNotNull('date')->get() as $s) {
-            $budget = floatval($s->budget);
+            $budget = $s->effective_budget;
             $monthKey = Carbon::parse($s->date)->format('Y-m');
             $monthLabel = Carbon::parse($s->date)->translatedFormat('F Y');
             $catName = $s->jenisSchedule->nama ?? 'Umum';
@@ -380,7 +380,7 @@ class FinanceController extends Controller
             $actualSchedule = floatval(Schedule::where('jenis_schedule_id', $catId)
                 ->whereBetween('date', [$startOfMonth, $endOfMonth])
                 ->whereNotNull('budget')
-                ->sum('budget'));
+                ->sum(\DB::raw('COALESCE(budget_final, budget)')));
 
             // DailyTransaction budget
             $actualDaily = floatval(DailyTransaction::where('tipe', 'pengeluaran')
@@ -486,7 +486,7 @@ class FinanceController extends Controller
 
         $totalExpenses = floatval(Schedule::whereNotNull('budget')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->sum('budget'));
+            ->sum(\DB::raw('COALESCE(budget_final, budget)')));
         $totalExpenses += floatval(DailyTransaction::where('tipe', 'pengeluaran')
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->sum('nominal'));
@@ -500,7 +500,7 @@ class FinanceController extends Controller
         }
         $allTimeProfit += floatval(DailyTransaction::where('tipe', 'pemasukan')->sum('nominal'));
 
-        $allTimeExpense = floatval(Schedule::whereNotNull('budget')->sum('budget'));
+        $allTimeExpense = floatval(Schedule::whereNotNull('budget')->sum(\DB::raw('COALESCE(budget_final, budget)')));
         $allTimeExpense += floatval(DailyTransaction::where('tipe', 'pengeluaran')->sum('nominal'));
 
         $totalCashPool = max(1000000000 + $allTimeProfit - $allTimeExpense, 0);
@@ -592,7 +592,7 @@ class FinanceController extends Controller
             $actualSchedule = floatval(Schedule::where('jenis_schedule_id', $catId)
                 ->whereBetween('date', [$startOfMonth, $endOfMonth])
                 ->whereNotNull('budget')
-                ->sum('budget'));
+                ->sum(\DB::raw('COALESCE(budget_final, budget)')));
 
             $actualDaily = floatval(DailyTransaction::where('tipe', 'pengeluaran')
                 ->where('kategori', $catName)
@@ -682,7 +682,7 @@ class FinanceController extends Controller
         // Pengeluaran Schedule sebelum target bulan
         $expenseTotal = floatval(Schedule::whereNotNull('budget')
             ->whereDate('date', '<', $targetDate)
-            ->sum('budget'));
+            ->sum(\DB::raw('COALESCE(budget_final, budget)')));
 
         // Pengeluaran DailyTransaction sebelum target bulan
         $expenseTotal += floatval(DailyTransaction::where('tipe', 'pengeluaran')
@@ -992,7 +992,7 @@ class FinanceController extends Controller
             $query->where('id', '!=', $excludeId);
         }
 
-        $usedBudget = floatval($query->sum('budget'));
+        $usedBudget = floatval($query->sum(\DB::raw('COALESCE(budget_final, budget)')));
         
         // Match category name
         $categoryName = JenisSchedule::find($categoryId)->nama ?? 'Umum';

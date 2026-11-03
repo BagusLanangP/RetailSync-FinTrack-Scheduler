@@ -123,15 +123,34 @@
                     <!-- Row 3: Budget & Tanggal Reminder -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label for="budget" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Anggaran / Budget (Rupiah)</label>
+                            <label for="budget" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Biaya Estimasi (Rupiah)</label>
                             <div class="relative rounded-xl shadow-sm">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                     <span class="text-slate-400 text-sm font-semibold">Rp</span>
                                 </div>
-                                <input type="number" step="0.01" name="budget" id="budget" value="{{ old('budget', $schedule->budget ?? '') }}" 
+                                <input type="number" step="0.01" name="budget" id="budget" value="{{ old('budget', $schedule->budget ?? 0) }}" 
                                        placeholder="0" 
                                        class="block w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-emerald-500 focus:ring focus:ring-emerald-500/10 @error('budget') border-rose-500 focus:border-rose-500 focus:ring-rose-500/10 @enderror">
+                            
+
+                            <div class="pt-3 space-y-1.5">
+                                <div class="flex justify-between items-center">
+                                    <label for="budget_final" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Biaya Final (Rupiah)</label>
+                                    <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Isi nanti jika harga belum pasti</span>
+                                </div>
+                                <div class="relative rounded-xl shadow-sm">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <span class="text-slate-400 text-sm font-semibold">Rp</span>
+                                    </div>
+                                    <input type="number" step="0.01" min="0" name="budget_final" id="budget_final" value="{{ old('budget_final', $schedule->budget_final ?? '') }}"
+                                           placeholder="Kosong = masih estimasi"
+                                           class="block w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-emerald-500 focus:ring focus:ring-emerald-500/10 @error('budget_final') border-rose-500 @enderror">
+                                </div>
+                                @error('budget_final')
+                                    <p class="text-xs text-rose-500 mt-1 font-medium">{{ $message }}</p>
+                                @enderror
                             </div>
+</div>
                             <span id="budget-helper" class="text-xs text-emerald-600 font-semibold mt-1 block h-4"></span>
                             <div id="budget-alert-info" class="hidden text-xs font-semibold mt-1.5 p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex flex-col gap-1.5">
                                 <span id="budget-remaining-text" class="text-slate-500">Sisa anggaran kategori ini: Rp 0 / Rp 0</span>

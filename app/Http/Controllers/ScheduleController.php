@@ -50,7 +50,9 @@ class ScheduleController extends Controller
                     'category' => $s->jenisSchedule->nama ?? 'Umum',
                     'date' => \Carbon\Carbon::parse($s->date)->format('d M Y'),
                     'reminder' => \Carbon\Carbon::parse($s->reminder_date)->format('d M Y'),
-                    'budget' => $s->budget ? 'Rp' . number_format($s->budget, 0, ',', '.') : '-',
+                    'budget' => $s->is_estimate ? 'Rp' . number_format($s->budget, 0, ',', '.') . ' (estimasi)' : 'Rp' . number_format($s->budget_final, 0, ',', '.'),
+                    'budgetEstimate' => 'Rp' . number_format($s->budget, 0, ',', '.'),
+                    'isEstimate' => $s->is_estimate,
                     'creator' => $s->creator->name ?? 'Sistem',
                     'status' => $s->status ? 'Selesai' : 'Belum Selesai',
                     'completed' => $s->completed_at ? \Carbon\Carbon::parse($s->completed_at)->format('d M Y H:i') : '-',
@@ -107,7 +109,7 @@ class ScheduleController extends Controller
             $usedScheduleBudget = floatval(Schedule::where('jenis_schedule_id', $jenis->id)
                 ->whereBetween('date', [$startOfMonth, $endOfMonth])
                 ->whereNotNull('budget')
-                ->sum('budget'));
+                ->sum(\DB::raw('COALESCE(budget_final, budget)')));
 
             // Sum daily transactions (expenses)
             $usedDailyTx = floatval(DailyTransaction::where('tipe', 'pengeluaran')
@@ -155,6 +157,7 @@ class ScheduleController extends Controller
             'date' => 'required|date',
             'note' => 'nullable|string|max:500',
             'budget' => 'nullable|numeric|min:0',
+            'budget_final' => 'nullable|numeric|min:0',
             'berulang' => 'required|in:0,1',
             'reminder_date' => 'required|date|after_or_equal:date',
         ]);
@@ -165,7 +168,8 @@ class ScheduleController extends Controller
             'jenis_schedule_id' => $request->jenis_schedule_id,
             'date' => $request->date,
             'note' => $request->note,
-            'budget' => $request->budget,
+            'budget' => $request->budget ?? 0,
+            'budget_final' => $request->budget_final,
             'berulang' => $request->berulang,
             'reminder_date' => $request->reminder_date,
             'created_by' => Auth::id(),
@@ -253,6 +257,7 @@ class ScheduleController extends Controller
             'date' => 'required|date',
             'note' => 'nullable|string|max:500',
             'budget' => 'nullable|numeric|min:0',
+            'budget_final' => 'nullable|numeric|min:0',
             'berulang' => 'required|in:0,1',
             'reminder_date' => 'required|date|after_or_equal:date',
         ]);
@@ -263,7 +268,8 @@ class ScheduleController extends Controller
             'jenis_schedule_id' => $request->jenis_schedule_id,
             'date' => $request->date,
             'note' => $request->note,
-            'budget' => $request->budget,
+            'budget' => $request->budget ?? 0,
+            'budget_final' => $request->budget_final,
             'berulang' => $request->berulang,
             'reminder_date' => $request->reminder_date,
         ]);
